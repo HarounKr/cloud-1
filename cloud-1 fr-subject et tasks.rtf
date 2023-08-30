@@ -1,0 +1,137 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1036{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fnil\fcharset2 Symbol;}}
+{\colortbl ;\red255\green0\blue0;}
+{\*\generator Riched20 10.0.19041}\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs36\lang9 Chapitre I : Introduction\fs22\par
+Ce sujet est inspir\'e9 du th\'e8me Inception. L'objectif est de d\'e9ployer votre site et l'infrastructure Docker n\'e9cessaire sur une instance fournie par un fournisseur de cloud. Dans cette version, chaque processus aura son propre conteneur. Vous NE POUVEZ PAS simplement d\'e9ployer les m\'eames images qu'avec Inception. Vous pouvez bien s\'fbr obtenir le code source du site web (votre blog WordPress par exemple), mais vous devez le d\'e9ployer en utilisant un conteneur par processus et de l'automatisation.\par
+L'automatisation est essentielle ici. Les \'e9tapes du d\'e9ploiement doivent \'eatre automatis\'e9es par un outil de votre choix (nous sugg\'e9rons Ansible).\par
+Ce serveur web complet doit \'eatre capable de faire fonctionner plusieurs services en parall\'e8le, tels que WordPress, PHPMyAdmin et une base de donn\'e9es.\par
+\fs36 Chapitre II : Choix de la plateforme\fs22\par
+42 ne fournit pas les serveurs n\'e9cessaires pour ex\'e9cuter votre application. Tout votre code devra \'eatre h\'e9berg\'e9 sur des serveurs externes \'e0 l'\'e9cole, que vous devrez vous procurer (et payer) vous-m\'eame.\par
+Pour vous aider, 42 et Scaleway ont conclu un partenariat vous permettant d'avoir des ressources pour ce projet. Il n'est pas obligatoire d'utiliser les services de Scaleway ; si vous pr\'e9f\'e9rez d'autres fournisseurs offrant des services \'e9quivalents, vous pouvez les utiliser.\par
+Si vous d\'e9cidez d'utiliser d'autres fournisseurs, vous pourriez \'eatre factur\'e9. Assurez-vous de lire les conditions d'utilisation et les services que vous pouvez utiliser avec vos cr\'e9dits.\par
+\cf1\b\fs28 /!\\\cf0  \b0  \i\fs22 Si vous d\'e9cidez d'utiliser d'autres fournisseurs, vous pourriez recevoir une facture. Assurez-vous de lire les conditions d'utilisation et les services que vous pouvez utiliser avec vos cr\'e9dits. N'oubliez pas de d\'e9sactiver les services que vous n'utilisez pas. En bref, soyez prudent, c'est VOTRE responsabilit\'e9, nous vous fournissons tout ce dont vous avez besoin pour que ce projet ne vous co\'fbte absolument rien.\par
+Vous \'eates dans un environnement de travail R\'c9EL, vos d\'e9cisions ont des cons\'e9quences R\'c9ELLES.\par
+Pour utiliser ces serveurs, vous devez ajouter votre cl\'e9 SSH \'e0 votre profil. C'est cette cl\'e9 qui vous permettra de vous connecter \'e0 votre serveur. Demandez aux administrateurs de cr\'e9er un serveur pour vous. Ils vous enverront la ligne de commande pour vous connecter \'e0 ce serveur : ssh root@X.X.X.X, X.X.X.X \'e9tant l'adresse IPv4 de votre serveur.  \cf1\b\i0\fs28 /!\\ \cf0\par
+\b0\fs22 La machine vous sera fournie lorsque vous vous inscrirez pour le projet, et lorsque vous effectuerez une correction. De plus, elle sera d\'e9truite (ainsi que les donn\'e9es stock\'e9es dessus) lorsque vous marquerez votre projet comme termin\'e9 ou lorsque vous validerez ce projet.\par
+\fs36 Chapitre III : Partie obligatoire\fs22\par
+Le d\'e9ploiement de votre application doit \'eatre enti\'e8rement automatis\'e9. Nous vous sugg\'e9rons d'utiliser Ansible, mais vous \'eates libre d'utiliser un autre outil si vous le souhaitez. Il est imp\'e9ratif de fournir un site fonctionnel \'e9quivalent \'e0 celui obtenu avec Inception, en utilisant uniquement votre script.\par
+Vous devez installer un site WordPress simple sur une instance. Vous devez vous assurer que :\par
+
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1 Votre site peut red\'e9marrer automatiquement si le serveur est red\'e9marr\'e9.\par
+{\pntext\f1\'B7\tab}En cas de red\'e9marrage, toutes les donn\'e9es du site sont conserv\'e9es (images, comptes utilisateurs, articles, ...).\par
+{\pntext\f1\'B7\tab}Il est possible de d\'e9ployer votre site sur plusieurs serveurs en parall\'e8le.\par
+{\pntext\f1\'B7\tab}Le script doit pouvoir fonctionner de mani\'e8re automatis\'e9e avec pour seule hypoth\'e8se un syst\'e8me d'exploitation similaire \'e0 Ubuntu 20.04 LTS sur l'instance cible, ex\'e9cutant un d\'e9mon SSH et ayant Python install\'e9.\par
+{\pntext\f1\'B7\tab}Vos applications fonctionneront dans des conteneurs s\'e9par\'e9s qui peuvent communiquer entre eux (1 processus = 1 conteneur).\par
+{\pntext\f1\'B7\tab}L'acc\'e8s public \'e0 votre serveur doit \'eatre limit\'e9 et s\'e9curis\'e9 (par exemple, il n'est pas possible de se connecter directement \'e0 votre base de donn\'e9es depuis Internet).\par
+{\pntext\f1\'B7\tab}Les services seront les diff\'e9rents composants d'un WordPress \'e0 installer par vous-m\'eame. Par exemple, Phpmyadmin, MySQL, ...\par
+{\pntext\f1\'B7\tab}Vous devez avoir un fichier docker-compose.yml.\par
+{\pntext\f1\'B7\tab}Vous devrez vous assurer que votre base de donn\'e9es SQL fonctionne avec WordPress et PHPMyAdmin.\par
+{\pntext\f1\'B7\tab}Votre serveur devrait \'eatre capable, lorsque cela est possible, d'utiliser TLS.\par
+{\pntext\f1\'B7\tab}Vous devrez vous assurer que, en fonction de l'URL demand\'e9e, votre serveur redirige vers le bon site.\par
+
+\pard\sa200\sl276\slmult1\fs36 Chapitre IV : Points d'attention\fs22\par
+Ce paragraphe est tr\'e8s important, lisez-le attentivement, autant de fois que n\'e9cessaire. Si vous avez des doutes, posez des questions.\par
+Vous devez r\'e9aliser ce projet par vos propres moyens avec les fournisseurs de votre choix. 42 a un partenariat avec Scaleway qui vous fournit des ressources gratuitement pour r\'e9aliser ce projet, mais la plupart des fournisseurs (AWS ou GCP par exemple) offrent un niveau d'utilisation gratuit qui permettra de r\'e9aliser ce projet \'e0 moindre co\'fbt ou m\'eame gratuitement.\par
+Dans tous les cas, VOUS \'caTES RESPONSABLE DU CHOIX ET DE L'ARR\'caT DES CORPS ET SERVICES D\'c9PLOY\'c9S : si vous oubliez un serveur ou laissez une t\'e2che tourner en boucle, vous pourriez d\'e9passer les cr\'e9dits qui vous sont allou\'e9s et vous devrez payer pour cette utilisation.\par
+\cf1\b\i\fs28 /!\\\cf0  \b0  \fs22 Vous ferez particuli\'e8remet attention \'e0 la taille de tous les serveurs et services que vous mettez en place. Si vous surdimensionnez vos ressources, cela pourrait potentiellement \'eatre co\'fbteux et \'e9puiser vos cr\'e9dits plus rapidement. De plus, tous les services ou tailles de serveurs ne sont pas \'e9ligibles aux niveaux d'utilisation gratuits offerts par les fournisseurs en g\'e9n\'e9ral.\par
+L'utilisation de services tiers est enti\'e8rement de VOTRE responsabilit\'e9, VOUS serez factur\'e9 si VOUS d\'e9passez vos cr\'e9dits gratuits. L'\'e9cole ne peut pas vous aider dans vos relations avec les fournisseurs externes.\par
+Faites \'e9galement attention au code h\'e9berg\'e9 sur GitHub ou d'autres d\'e9p\'f4ts publics : ne laissez pas tra\'eener de cl\'e9s ou d'identifiants. \cf1\b\i0\fs28 /!\\\cf0  \b0  \fs22\par
+En bref, nous ne sommes pas dans un bac \'e0 sable, ce sont de vraies ressources.\par
+\fs36 Chapitre V\fs22\par
+Soumission et \'e9valuation par les pairs\par
+Rendez votre devoir dans votre d\'e9p\'f4t Git comme d'habitude. Seul le travail \'e0 l'int\'e9rieur de votre d\'e9p\'f4t sera \'e9valu\'e9 lors de la d\'e9fense. N'h\'e9sitez pas \'e0 v\'e9rifier deux fois les noms de vos dossiers et fichiers pour vous assurer qu'ils sont corrects.\par
+Il n'inclut pas de jeu bonus.\par
+Nous ne pr\'eaterons pas trop d'attention \'e0 l'apparence du site, un WordPress de base suffit. Nous tol\'e9rerons l'absence d'un nom de domaine m\'e9morable, mais si vous en avez un, c'est appr\'e9ciable. Surtout lorsque ce nom m\'e9morable vous permet d'acc\'e9der \'e0 votre site en HTTPS. Il existe des fournisseurs de noms de domaine gratuits comme :\par
+DuckDNS\par
+.tk TLD\par
+L'achat de noms de domaine n'est pas inclus dans les ressources fournies par Scaleway. Si vous souhaitez prendre un nouveau nom de domaine sp\'e9cifiquement pour cet exercice, ce sera \'e0 vos frais.\par
+
+\pard\sa200\sl276\slmult1\qc ------------------------------------------------------\par
+
+\pard\sa200\sl276\slmult1 Aborder un sujet comme celui-ci n\'e9cessite une planification minutieuse, une compr\'e9hension claire des exigences et une bonne connaissance des technologies impliqu\'e9es. Voici quelques \'e9tapes que vous pourriez suivre :\par
+\fs32\'c9tape 1 : Comprendre les Exigences\fs22\par
+Relisez le sujet plusieurs fois pour vous assurer que vous comprenez toutes les exigences.\par
+Identifiez les composants cl\'e9s : Docker, Ansible, WordPress, PHPMyAdmin, base de donn\'e9es, etc.\par
+Notez les contraintes sp\'e9cifiques, comme l'automatisation et les exigences de s\'e9curit\'e9.\par
+\fs32\'c9tape 2 : Recherche et Planification\fs22\par
+Recherchez les meilleures pratiques pour d\'e9ployer ces technologies.\par
+Planifiez l'architecture de votre syst\'e8me. Comment les diff\'e9rents conteneurs Docker vont-ils interagir ? Quelle sera la structure de votre base de donn\'e9es ?\par
+Choisissez votre fournisseur de cloud et comprenez leur mod\'e8le de tarification pour \'e9viter toute surprise.\par
+\fs32\'c9tape 3 : Configuration de l'Environnement\par
+\fs22 Configurez votre environnement de d\'e9veloppement. Assurez-vous que tous les outils n\'e9cessaires sont install\'e9s.\par
+Mettez en place un d\'e9p\'f4t Git pour le versionnage et la collaboration.\par
+\fs32\'c9tape 4 : D\'e9veloppement et Test\fs22\par
+Commencez par des prototypes de base pour chaque composant. Par exemple, un conteneur Docker pour WordPress, un autre pour la base de donn\'e9es, etc.\par
+Utilisez Ansible ou un autre outil d'automatisation pour automatiser le d\'e9ploiement.\par
+Testez chaque composant individuellement et ensuite ensemble comme une unit\'e9.\par
+\fs32\'c9tape 5 : S\'e9curit\'e9\fs22\par
+Assurez-vous que l'acc\'e8s public \'e0 votre serveur est limit\'e9 et s\'e9curis\'e9.\par
+Mettez en place des certificats TLS pour le chiffrement.\par
+V\'e9rifiez les permissions et les r\'f4les pour chaque service.\par
+\fs32\'c9tape 6 : Documentation\fs22\par
+Documentez chaque \'e9tape, chaque d\'e9cision prise et chaque configuration. Cela sera utile pour l'\'e9valuation par les pairs et pour toute maintenance future.\par
+\fs32\'c9tape 7 : R\'e9vision et Soumission\fs22\par
+Rev\'e9rifiez les exigences du sujet pour vous assurer que tout a \'e9t\'e9 couvert.\par
+Testez \'e0 nouveau tout le syst\'e8me pour vous assurer qu'il fonctionne comme pr\'e9vu.\par
+Soumettez votre travail via le d\'e9p\'f4t Git comme indiqu\'e9.\par
+\'c9tape 8 : Pr\'e9paration pour l'\'c9valuation\par
+Soyez pr\'eat \'e0 expliquer vos choix de conception, les d\'e9fis que vous avez rencontr\'e9s et comment vous les avez surmont\'e9s.\par
+En suivant ces \'e9tapes, vous aurez une approche structur\'e9e pour aborder ce sujet complexe. Bonne chance \par
+
+\pard\sa200\sl276\slmult1\qc ------------------------------------------------------\par
+
+\pard\sa200\sl276\slmult1\'c9tapes du Playbook Ansible\par
+Connexion au Serveur Cloud Scaleway\par
+Ansible se connecte \'e0 votre serveur Scaleway via SSH.\par
+Mise \'e0 Jour du Syst\'e8me\par
+Optionnel mais recommand\'e9 pour des raisons de s\'e9curit\'e9 et de compatibilit\'e9.\par
+Installation de Docker\par
+Ansible v\'e9rifie si Docker est install\'e9 et, si ce n'est pas le cas, l'installe.\par
+Installation de Docker Compose\par
+Ansible v\'e9rifie si Docker Compose est install\'e9 et, si ce n'est pas le cas, l'installe.\par
+Transfert des Dossiers et Fichiers N\'e9cessaires\par
+Ansible copie les dossiers contenant vos Dockerfiles, scripts et autres fichiers de configuration n\'e9cessaires sur le serveur Scaleway.\par
+Transfert du fichier docker-compose.yml\par
+Ansible copie votre fichier docker-compose.yml local sur le serveur Scaleway.\par
+Lancement de Docker Compose\par
+Ansible ex\'e9cute docker-compose up (ou docker-compose up -d pour le mode d\'e9tach\'e9) pour lancer les conteneurs d\'e9finis dans le fichier docker-compose.yml.\par
+Configuration Suppl\'e9mentaire\par
+Toute autre t\'e2che de configuration ou de s\'e9curisation que vous souhaitez effectuer, comme la configuration du pare-feu ou l'installation de certificats SSL.\par
+
+\pard\sa200\sl276\slmult1\qc ------------------------------------------------------\par
+
+\pard\sa200\sl276\slmult1 Pour mener \'e0 bien ce projet, plusieurs comp\'e9tences et notions sont n\'e9cessaires. Voici une liste non exhaustive :\par
+
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1 Notions de Cloud Computing\par
+{\pntext\f1\'B7\tab}Comprendre les principes de base du cloud computing et comment fonctionnent les fournisseurs de cloud comme Scaleway.\par
+{\pntext\f1\'B7\tab}Linux et Administration Syst\'e8me\par
+{\pntext\f1\'B7\tab}Commandes de base de Linux et gestion des services.\par
+{\pntext\f1\'B7\tab}Comprendre SSH pour la connexion \'e0 distance.\par
+{\pntext\f1\'B7\tab}Docker\par
+{\pntext\f1\'B7\tab}Comprendre les conteneurs et comment ils fonctionnent.\par
+{\pntext\f1\'B7\tab}Savoir cr\'e9er des images Docker \'e0 l'aide de Dockerfiles.\par
+{\pntext\f1\'B7\tab}Gestion des conteneurs Docker (lancement, arr\'eat, suppression, etc.).\par
+{\pntext\f1\'B7\tab}Docker Compose\par
+{\pntext\f1\'B7\tab}Savoir utiliser Docker Compose pour g\'e9rer plusieurs conteneurs comme une seule application.\par
+{\pntext\f1\'B7\tab}Comprendre le format du fichier docker-compose.yml.\par
+{\pntext\f1\'B7\tab}Ansible\par
+{\pntext\f1\'B7\tab}Comprendre les principes de base d'Ansible pour l'automatisation.\par
+{\pntext\f1\'B7\tab}Savoir \'e9crire des playbooks Ansible pour automatiser le d\'e9ploiement et la configuration.\par
+{\pntext\f1\'B7\tab}Gestion des inventaires Ansible.\par
+{\pntext\f1\'B7\tab}Bases de Donn\'e9es\par
+{\pntext\f1\'B7\tab}Comprendre les bases de donn\'e9es SQL comme MySQL ou PostgreSQL.\par
+{\pntext\f1\'B7\tab}Savoir comment interagir avec une base de donn\'e9es \'e0 partir d'une application.\par
+{\pntext\f1\'B7\tab}WordPress\par
+{\pntext\f1\'B7\tab}Comprendre comment WordPress fonctionne, notamment en ce qui concerne sa configuration et sa base de donn\'e9es.\par
+{\pntext\f1\'B7\tab}R\'e9seau et S\'e9curit\'e9\par
+{\pntext\f1\'B7\tab}Comprendre les bases du r\'e9seau, y compris comment configurer un pare-feu.\par
+{\pntext\f1\'B7\tab}Connaissances de base en SSL/TLS pour la configuration HTTPS.\par
+{\pntext\f1\'B7\tab}Scripting et Automatisation\par
+{\pntext\f1\'B7\tab}Connaissances de base en scripting (par exemple, Bash) pour automatiser des t\'e2ches simples.\par
+{\pntext\f1\'B7\tab}Gestion de Version\par
+{\pntext\f1\'B7\tab}Utilisation de Git pour le suivi des versions de votre code.\par
+{\pntext\f1\'B7\tab}Documentation et Bonnes Pratiques\par
+{\pntext\f1\'B7\tab}Savoir documenter ce que vous avez fait, tant pour vous-m\'eame que pour d'autres qui pourraient utiliser ou maintenir votre projet \'e0 l'avenir.\par
+{\pntext\f1\'B7\tab}Chacune de ces comp\'e9tences contribuera \'e0 diff\'e9rents aspects de votre projet, de la planification initiale \'e0 l'impl\'e9mentation et au d\'e9ploiement.\par
+}
+ 
