@@ -1,0 +1,24 @@
+- name: Install docker & Start containers
+  hosts: web
+  become: yes  # utiliser sudo
+  roles:
+    - role: install_docker
+  var_files:
+    - vars_docker_install.yml
+    - vars_compose.yml
+  tasks:
+    - name: Start docker
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+    
+    - name: Generate docker-compose.yml
+      template:
+        src: docker-compose/docker-compose.yml.j2
+        dest: /tmp/docker-compose.yml
+    
+    # - name: Build docker-compose
+    #   docker-compose:
+    #   project_src: /tmp/
+    #   state: present

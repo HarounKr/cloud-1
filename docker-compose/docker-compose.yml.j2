@@ -1,0 +1,7 @@
+version: '3.1'
+
+services:
+  wordpress:
+    image: wordpress:{{ wordpress_version }}
+    ports:
+      - "8080:80"
