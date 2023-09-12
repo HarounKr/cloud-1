@@ -3,21 +3,62 @@
   become: yes  # utiliser sudo
   roles:
     - role: install_docker
-  var_files:
-    - vars_docker_install.yml
-    - vars_compose.yml
+  vars_files:
+    - vars/vars_docker_install.yml
+    - vars/vars_compose.yml
   tasks:
     - name: Start docker
       systemd:
         name: docker
         state: started
         enabled: yes
+      
+    - name: Create required directories
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /home/hkrifa/data
+        - /home/hkrifa/data/wordpress
+        - /home/hkrifa/data/mysql
+        - /home/hkrifa/app
+        - /home/hkrifa/app/src
     
+    - name: Generate private key
+      openssl_privatekey:
+        path: /etc/ssl/private/nginx.key
+        size: 2048
+    
+    - name: Generate self-signed certificate
+      openssl_certificate:
+        path: /etc/ssl/certs/nginx.crt
+        privatekey_path: /etc/ssl/private/nginx.key
+        provider: selfsigned
+        selfsigned_digest: sha256
+        selfsigned_not_after: "+365d"
+        subject_alt_name: IP:51.51.51.200
+      
+    - name: Generate nginx config
+      template:
+        src: nginx-conf/nginx.conf.j2
+        dest: /home/hkrifa/app/nginx.conf
+
     - name: Generate docker-compose.yml
       template:
         src: docker-compose/docker-compose.yml.j2
-        dest: /tmp/docker-compose.yml
-    
+        dest: /home/hkrifa/app/docker-compose.yml
+
+# Down Containers
+- name: Stop docker-compose
+  hosts: web
+  become: yes
+  tasks:
+    - name: Stop containers
+      community.docker.docker_compose:
+        project_src: /home/hkrifa/app
+        state: absent
+  tags:
+    - down
     # - name: Build docker-compose
     #   docker-compose:
     #   project_src: /tmp/
