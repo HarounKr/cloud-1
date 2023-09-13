@@ -1,0 +1,9 @@
+# Down Containers
+- name: Stop docker-compose
+  hosts: web
+  become: yes
+  tasks:
+    - name: Stop containers
+      community.docker.docker_compose:
+        project_src: /home/hkrifa/app
+        state: absent

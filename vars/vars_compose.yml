@@ -1,6 +1,8 @@
 mysql_version: 8.0.27
 
-mysql_root_password: somepassword
-mysql_database: "wordpress"
-mysql_user: "wordpress"
-mysql_password: "wordpress"
+mysql_root_password: root_password123
+mysql_database: wordpress_db
+mysql_user: wordpress_user
+mysql_password: wp_user_password
+wordpress_db_name: wordpress_db
+phpmyadmin_root_password: root_password 
