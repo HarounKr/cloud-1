@@ -1,0 +1,27 @@
+worker_processes auto;
+
+events {
+    worker_connections 1024;
+}
+
+http { 
+    server {
+        listen 80;
+        
+        location / {
+            proxy_pass http://wordpress:80; # Redirige les requêtes HTTP vers le conteneur WordPress
+            proxy_set_header Host $host;  # Fixe le header "Host" à la valeur du header "Host" original de la requête client
+            proxy_set_header X-Real-IP $remote_addr; # Envoie l'adresse IP réelle du client dans le header "X-Real-IP"
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;   # Envoie les adresses IP du client et de tous les proxies intermédiaires dans le header "X-Forwarded-For"
+        }
+        
+        location ^~ /phpmyadmin/ {
+            rewrite ^/phpmyadmin(/.*)$ $1 break;
+            proxy_pass http://phpmyadmin;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;  
+        }
+    }
+}
