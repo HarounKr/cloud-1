@@ -7,7 +7,8 @@ events {
 http { 
     server {
         listen 80;
-        
+        listen [::]:80;
+
         location / {
             proxy_pass http://wordpress:80; # Redirige les requêtes HTTP vers le conteneur WordPress
             proxy_set_header Host $host;  # Fixe le header "Host" à la valeur du header "Host" original de la requête client
@@ -15,13 +16,13 @@ http {
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;   # Envoie les adresses IP du client et de tous les proxies intermédiaires dans le header "X-Forwarded-For"
         }
         
-        location ^~ /phpmyadmin/ {
+        location ^~ /phpmyadmin/ { # ^~ pour url statique
             rewrite ^/phpmyadmin(/.*)$ $1 break;
             proxy_pass http://phpmyadmin;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;  
+            proxy_set_header X-Forwarded-Proto $scheme;  # sert a savoir le procotol utiliser par le client http ou https
         }
     }
 }

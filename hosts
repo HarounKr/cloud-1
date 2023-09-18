@@ -1,2 +1,2 @@
 [web]
-cloud-1 ansible_connection=ssh ansible_ssh_user=hkrifa ansible_user=hkrifa
+cloud-1 ansible_connection=ssh ansible_ssh_user=hkrifa ansible_user=hkrifa ansible_become_pass='{{ become_pass }}'

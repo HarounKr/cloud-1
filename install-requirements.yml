@@ -2,7 +2,8 @@
   hosts: web
   become: yes  # utiliser sudo
   roles:
-    - role: install_docker
+    - role: roles/install_docker
+    - role: roles/systemctl_config
   vars_files:
     - vars/vars_docker_install.yml
     - vars/vars_compose.yml
@@ -23,7 +24,6 @@
         - /home/hkrifa/data/mysql
         - /home/hkrifa/data/phpmyadmin
         - /home/hkrifa/app
-        - /home/hkrifa/app/src
     
     - name: Generate self-signed certificate
       ansible.builtin.command:

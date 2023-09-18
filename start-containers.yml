@@ -1,7 +1,9 @@
 # Start Containers
-- name: Stop docker-compose
+- name: Start docker-compose
   hosts: web
   become: yes
+  vars_files:
+    - vars/vars_compose.yml
   tasks:
     - name: Start containers
       community.docker.docker_compose:

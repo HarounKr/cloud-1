@@ -1,0 +1,13 @@
+- name: Generate systemctl service file
+  template:
+    src: ./wordpress.service.j2
+    dest: /etc/systemd/system/wordpress.service
+
+- name: Execute daemon-reload for systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Enable wordpress service
+  ansible.builtin.systemd:
+    name: wordpress.service
+    enabled: true

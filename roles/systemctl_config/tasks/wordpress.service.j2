@@ -1,0 +1,11 @@
+[Unit] 
+Description=Wordpress restart
+Requires=docker.service
+After=docker.service
+
+[Service]
+WorkingDirectory=/home/hkrifa/app
+ExecStart=/usr/local/bin/docker-compose up -d
+
+[Install]
+WantedBy=multi-user.target
