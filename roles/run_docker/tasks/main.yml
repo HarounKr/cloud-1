@@ -1,0 +1,52 @@
+---
+# defaults file for test-role-1
+- name: Start docker
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+  
+- name: Create required directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /home/project-42/data
+    - /home/project-42/data/wordpress
+    - /home/project-42/data/mysql
+    - /home/project-42/data/phpmyadmin
+    - /home/project-42/data/nginx
+    - /home/project-42/app
+
+- name: Generate nginx config
+  template:
+    src: templates/app.conf.j2
+    dest: /home/project-42/data/nginx/app.conf
+
+- name: Generate docker-compose.yml
+  template:
+    src: templates/docker-compose.yml.j2
+    dest: /home/project-42/app/docker-compose.yml
+    mode: 0600
+
+- name: Generate script docker
+  template:
+    src: templates/init-letsencrypt.py.j2
+    dest: /home/project-42/app/init-letsencrypt.py
+    mode: 0600
+
+# - name: Execute the command in remote shell; stdout goes to the specified file on the remote
+#   shell: |
+#     printf "{{ mysql_password }}" | docker secret create mysql_password -
+#     printf "{{ mysql_root_password }}" | docker secret create mysql_root_password -
+#     printf "{{ phpmyadmin_root_password }}" | docker secret create phpmyadmin_root_password -
+    
+- name: Run Python3 script
+  command: python3 /home/project-42/app/init-letsencrypt.py
+  args:
+    chdir: /home/project-42/app
+
+- name: Generate wp-config.php 
+  template:
+    src: templates/wp-config.php.j2
+    dest: /home/project-42/data/wordpress/wp-config.php 

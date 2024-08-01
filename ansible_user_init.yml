@@ -1,0 +1,8 @@
+---
+- name: Init new ansible user
+  hosts: init-users
+  remote_user: root
+  roles:
+    - create_ansible_user
+  vars_files:
+    - roles/run_docker/vars/main.yml

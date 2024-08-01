@@ -1,0 +1,5 @@
+---
+users:
+  - username: project-42
+    use_sudo: yes
+    password: "{{ become_pass | password_hash('sha512') }}"

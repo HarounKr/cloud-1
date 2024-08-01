@@ -1,0 +1,65 @@
+import subprocess
+import os
+import sys
+import shutil
+
+# Définit les domaines et autres variables
+domains = ["{{ dns_address }}"]
+rsa_key_size = 4096
+data_path = "./data/certbot"
+live_path = "/home/project-42/app/data/certbot/conf/live/{{ dns_address }}"
+email = "haroun_krifa@yahoo.fr"
+staging = 0
+
+def get_fake_certificate(path) -> list:
+    return ["docker-compose", "run", "--rm", "--entrypoint", f"openssl req -x509 -nodes -newkey rsa:{rsa_key_size} -days 1 -keyout '{path}/privkey.pem' -out '{path}/fullchain.pem' -subj '/CN=localhost'", "certbot"]
+
+def delete_fake_certificate() -> list:
+    return ["docker-compose", "run", "--rm", "--entrypoint", f"openssl req -x509 -nodes -newkey rsa:{rsa_key_size} -days 1 -keyout '{path}/privkey.pem' -out '{path}/fullchain.pem' -subj '/CN=localhost'", "certbot"]
+
+def get_letsencrypt_certificate(staging_arg, email_arg, domain_args) -> list:
+    return ["docker-compose", "run", "--rm", "--entrypoint", f"certbot -v certonly --webroot -w /var/www/certbot {staging_arg} {email_arg} {domain_args} --no-eff-email --rsa-key-size {rsa_key_size} --agree-tos --force-renewal", "certbot"]
+#lancer docker compose
+subprocess.run(["docker-compose", "up", "-d", "wordpress","phpmyadmin","mysql_db"])
+
+#Verifier si des certificats existent deja
+if os.path.exists(live_path):
+    subprocess.run(["docker-compose", "up", "-d", "nginx"])
+    sys.exit(0)
+
+# Télécharge les paramètres TLS recommandés s'ils n'existent pas
+conf_path = os.path.join(data_path, "conf")
+if not (os.path.exists(f"{conf_path}/options-ssl-nginx.conf") and os.path.exists(f"{conf_path}/ssl-dhparams.pem")):
+    print("### Téléchargement des paramètres TLS recommandés ...")
+    os.makedirs(conf_path, exist_ok=True)
+    subprocess.run(["curl", "-s", "-o", f"{conf_path}/options-ssl-nginx.conf", "https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf"])
+    subprocess.run(["curl", "-s", "-o", f"{conf_path}/ssl-dhparams.pem", "https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem"])
+
+# Crée un certificat factice pour les domaines
+print(f"### Création d'un certificat factice pour {domains} ...")
+path = f"/etc/letsencrypt/live/{domains[0]}"
+os.makedirs(f"{data_path}/conf/live/{domains[0]}", exist_ok=True)
+generate_cmd = get_fake_certificate(path=path)
+subprocess.run(generate_cmd)
+
+# Démarre nginx
+print("### Démarrage de nginx ...")
+subprocess.run(["docker-compose", "up", "--force-recreate", "-d", "nginx"])
+
+# Supprime le certificat factice
+print(f"### Suppression du certificat factice pour {domains} ...")
+delete_cmd = delete_fake_certificate()
+subprocess.run(delete_cmd)
+shutil.rmtree(live_path)
+
+# Demande un certificat Let's Encrypt pour les domaines
+print(f"### Demande de certificat Let's Encrypt pour {domains} ...")
+domain_args = " ".join([f"-d {domain}" for domain in domains])
+email_arg = f"--email {email}" if email else "--register-unsafely-without-email"
+staging_arg = "--staging" if staging != 0 else ""
+cmd = get_letsencrypt_certificate(staging_arg=staging_arg, email_arg=email_arg, domain_args=domain_args)
+subprocess.run(cmd)
+
+# Recharge nginx avec les nouveaux certificats
+print("### Rechargement de nginx ...")
+subprocess.run(["docker-compose", "exec", "nginx", "nginx", "-s", "reload"])

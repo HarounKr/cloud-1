@@ -1,0 +1,25 @@
+---
+# tasks file for create_ansible_user
+  - include_vars: ansible_users.yml
+
+  - name: Create a login user
+    user:
+      name: '{{ item.username }}'
+      password: '{{ item.password }}'
+      groups: # Empty by default, here we give it some groups
+        - sudo
+      state: present
+      append: yes
+      shell: /bin/bash       # Defaults to /bin/bash
+      system: no             # Defaults to no
+      createhome: yes        # Defaults to yes
+      home: /home/{{ item.username }}  # Defaults to /home/<username>
+      state: present
+    with_items: '{{users}}'
+
+  - name: Setup | authorized key upload
+    authorized_key: user={{ item.username }}
+      key="{{ lookup('file', 'files/{{ item.username }}.pub') }}"
+    when: "{{ item.use_sudo }} == True"
+    with_items: '{{users}}'
+
