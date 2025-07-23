@@ -43,11 +43,11 @@ Les **rôles Ansible** permettent d’organiser le projet en composants réutili
 
 Les fichiers situés dans `vars/` de chaque rôle sont **chiffrés avec `ansible-vault`** car ils contiennent des **mots de passe** (ansible-vault encrypt roles/run_docker/vars/main.yml)
 Il n’est donc **pas possible de lancer le projet** sans connaître la clé de chiffrement.
-> Il est toutefois possible de **recréer les fichiers chiffrés à partir de zéro**,  
-> en renseignant les bonnes valeurs, en vous référant aux **fichiers templates `.j2`**  
+> Il est toutefois possible de **recréer les fichiers chiffrés à partir de zéro**,  en renseignant les bonnes valeurs, en vous référant aux **fichiers templates `.j2`**  
 > (comme `wp-config.php.j2` ou `docker-compose.yml.j2` par exemple) pour savoir quelles variables sont nécessaires.
 
-En temps normal, le projet peut être lancer en étant à la racine avec la commande :
+En temps normal, le projet peut être lancer en étant à la racine avec les commandes :
 ```bash
+ansible-playbook ansible_user_init.yml --ask-vault-pass
 ansible-playbook playbook.yml --ask-vault-pass
 ```
